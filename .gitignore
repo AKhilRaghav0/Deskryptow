@@ -1,0 +1,69 @@
+# Dependencies
+node_modules/
+__pycache__/
+*.pyc
+.Python
+env/
+venv/
+ENV/
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+*.key
+*.pem
+
+# Build outputs
+dist/
+build/
+*.egg-info/
+.cache/
+.pytest_cache/
+coverage/
+.coverage
+
+# Blockchain
+blockchain/artifacts/
+blockchain/cache/
+blockchain/typechain-types/
+blockchain/coverage/
+
+# Frontend
+frontend/dist/
+frontend/build/
+frontend/.next/
+frontend/out/
+
+# Backend
+backend/app.db
+backend/*.db
+
+# Logs
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# GCP
+gcp-key.json
+service-account.json
+*-key.json
+
+# Misc
+.temp/
+temp/
+tmp/

@@ -1,0 +1,35 @@
+{
+  "name": "freelance-escrow-contracts",
+  "version": "1.0.0",
+  "description": "Smart contracts for decentralized freelance escrow platform",
+  "main": "index.js",
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "test:coverage": "hardhat coverage",
+    "deploy:mumbai": "hardhat run scripts/deploy.js --network mumbai",
+    "verify:mumbai": "hardhat run scripts/verify.js --network mumbai",
+    "node": "hardhat node",
+    "clean": "hardhat clean"
+  },
+  "keywords": [
+    "blockchain",
+    "ethereum",
+    "polygon",
+    "escrow",
+    "freelance",
+    "smart-contracts"
+  ],
+  "author": "Your Team",
+  "license": "MIT",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
+    "@nomiclabs/hardhat-etherscan": "^3.1.7",
+    "hardhat": "^2.19.0",
+    "hardhat-gas-reporter": "^1.0.9"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.0.0",
+    "dotenv": "^16.3.1"
+  }
+}
