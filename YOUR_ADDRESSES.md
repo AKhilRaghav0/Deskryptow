@@ -1,5 +1,4 @@
-# Your Wallet Addresses
-
+# Your Wallet Address
 ## 📋 Account Assignments
 
 ### 1. Mac (Deployer + Client)
