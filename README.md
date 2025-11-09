@@ -13,6 +13,23 @@
 
 ---
 
+## 📸 Project Screenshots
+
+| | | |
+|:---:|:---:|:---:|
+| ![Screenshot 1](projectphotos/Screenshot%202025-11-09%20at%2012.29.52%20PM.png) | ![Screenshot 2](projectphotos/Screenshot%202025-11-09%20at%2012.30.02%20PM.png) | ![Screenshot 3](projectphotos/Screenshot%202025-11-09%20at%2012.30.07%20PM.png) |
+| Home Page | Job Listing | Job Details |
+| ![Screenshot 4](projectphotos/Screenshot%202025-11-09%20at%2012.30.11%20PM.png) | ![Screenshot 5](projectphotos/Screenshot%202025-11-09%20at%2012.30.16%20PM.png) | ![Screenshot 6](projectphotos/Screenshot%202025-11-09%20at%2012.30.21%20PM.png) |
+| Post Job | Proposals | Dashboard |
+| ![Screenshot 7](projectphotos/Screenshot%202025-11-09%20at%2012.30.28%20PM.png) | ![Screenshot 8](projectphotos/Screenshot%202025-11-09%20at%2012.30.36%20PM.png) | ![Screenshot 9](projectphotos/Screenshot%202025-11-09%20at%2012.30.47%20PM.png) |
+| Chat System | Notifications | Escrow Dashboard |
+| ![Screenshot 10](projectphotos/Screenshot%202025-11-09%20at%2012.30.55%20PM.png) | ![Screenshot 11](projectphotos/Screenshot%202025-11-09%20at%2012.30.59%20PM.png) | ![Screenshot 12](projectphotos/Screenshot%202025-11-09%20at%2012.31.15%20PM.png) |
+| Submit Work | Payment Release | Job Management |
+| ![Screenshot 13](projectphotos/Screenshot%202025-11-09%20at%2012.31.22%20PM.png) | ![Screenshot 14](projectphotos/Screenshot%202025-11-09%20at%2012.32.24%20PM.png) | |
+| Profile Settings | Search & Filters | |
+
+---
+
 ## 👥 Team & Collaboration
 
 This project is a collaborative effort by:
