@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deskryptow - Presentation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Fira Code', 'JetBrains Mono', monospace;
+        }
+        body {
+            background-color: #EEEEEE;
+            color: #1D1616;
+        }
+        .slide {
+            display: none;
+            min-height: 100vh;
+            padding: 4rem;
+        }
+        .slide.active {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .slide-content {
+            max-width: 1200px;
+            width: 100%;
+        }
+        .grid-bg {
+            background-image: 
+                linear-gradient(to right, #E5E5E5 1px, transparent 1px),
+                linear-gradient(to bottom, #E5E5E5 1px, transparent 1px);
+            background-size: 40px 40px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            opacity: 0.3;
+            pointer-events: none;
+        }
+        .slide-number {
+            position: absolute;
+            bottom: 2rem;
+            right: 2rem;
+            font-size: 0.875rem;
+            color: #8E1616;
+        }
+        .nav-dots {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 0.5rem;
+            z-index: 100;
+        }
+        .nav-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: #CCCCCC;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .nav-dot.active {
+            background-color: #D84040;
+            width: 32px;
+            border-radius: 6px;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .slide.active {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        .fullscreen-btn {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            z-index: 1000;
+            width: 56px;
+            height: 56px;
+            border-radius: 1rem;
+            background: white;
+            border: 2px solid #1D1616;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        }
+        .fullscreen-btn:hover {
+            background: #D84040;
+            border-color: #D84040;
+            transform: scale(1.1);
+        }
+        .fullscreen-btn:hover svg {
+            color: white;
+        }
+        .fullscreen-btn svg {
+            width: 24px;
+            height: 24px;
+            color: #1D1616;
+            transition: color 0.3s;
+        }
+        
+        .nav-arrows {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 100;
+            width: 56px;
+            height: 56px;
+            border-radius: 1rem;
+            background: white;
+            border: 2px solid #1D1616;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        }
+        .nav-arrows:hover {
+            background: #D84040;
+            border-color: #D84040;
+            transform: translateY(-50%) scale(1.1);
+        }
+        .nav-arrows:hover svg {
+            color: white;
+        }
+        .nav-arrows svg {
+            width: 24px;
+            height: 24px;
+            color: #1D1616;
+            transition: color 0.3s;
+        }
+        .nav-prev {
+            left: 2rem;
+        }
+        .nav-next {
+            right: 2rem;
+        }
+        
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 4px;
+            background: #D84040;
+            transition: width 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .slide-title {
+            background: linear-gradient(135deg, #1D1616 0%, #8E1616 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .card-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        }
+    </style>
+</head>
+<body class="relative overflow-hidden">
+    <div class="grid-bg"></div>
+    <div class="progress-bar" id="progressBar"></div>
+    
+    <!-- Fullscreen Button -->
+    <button class="fullscreen-btn" onclick="toggleFullscreen()" title="Toggle Fullscreen (F11)">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path>
+        </svg>
+    </button>
+    
+    <!-- Navigation Arrows -->
+    <button class="nav-arrows nav-prev" onclick="prevSlide()" title="Previous (←)">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+        </svg>
+    </button>
+    <button class="nav-arrows nav-next" onclick="nextSlide()" title="Next (→)">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+        </svg>
+    </button>
+    
+    <!-- Slide 1: Intro -->
+    <div class="slide active" id="slide-1">
+        <div class="slide-content text-center">
+            <h1 class="text-8xl font-display font-bold slide-title mb-6">Deskryptow</h1>
+            <p class="text-4xl text-[#8E1616] mb-12 font-semibold">Decentralized Freelance Escrow Platform</p>
+            <div class="flex items-center justify-center gap-8 text-xl text-[#1D1616] mb-8">
+                <div class="px-6 py-3 rounded-2xl bg-white border-2 border-[#1D1616] card-hover">
+                    <span class="font-bold text-[#D84040]">Polygon</span> Amoy
+                </div>
+                <div class="px-6 py-3 rounded-2xl bg-white border-2 border-[#1D1616] card-hover">
+                    <span class="font-bold text-[#D84040]">2%</span> Platform Fee
+                </div>
+                <div class="px-6 py-3 rounded-2xl bg-white border-2 border-[#1D1616] card-hover">
+                    <span class="font-bold text-[#D84040]">Smart</span> Contracts
+                </div>
+            </div>
+            <p class="text-lg text-[#8E1616] max-w-3xl mx-auto">Upwork meets Web3 - A blockchain-powered platform that eliminates intermediaries and puts control back in your hands</p>
+        </div>
+        <div class="slide-number">1 / 9</div>
+    </div>
+
+    <!-- Slide 2: Core (Score) -->
+    <div class="slide" id="slide-2">
+        <div class="slide-content">
+            <h2 class="text-6xl font-display font-bold slide-title mb-12 text-center">Core Features</h2>
+            <div class="grid grid-cols-2 gap-8">
+                <div class="bg-white rounded-3xl p-8 border-2 border-[#1D1616] shadow-elevated card-hover">
+                    <div class="text-5xl mb-4">🔒</div>
+                    <h3 class="text-2xl font-bold text-[#1D1616] mb-3">Smart Contract Escrow</h3>
+                    <p class="text-lg text-[#8E1616]">Funds held securely in blockchain, auto-released on approval</p>
+                </div>
+                <div class="bg-white rounded-3xl p-8 border-2 border-[#1D1616] shadow-elevated card-hover">
+                    <div class="text-5xl mb-4">💰</div>
+                    <h3 class="text-2xl font-bold text-[#1D1616] mb-3">90% Lower Fees</h3>
+                    <p class="text-lg text-[#8E1616]">Only 2% platform fee vs 20% on traditional platforms</p>
+                </div>
+                <div class="bg-white rounded-3xl p-8 border-2 border-[#1D1616] shadow-elevated card-hover">
+                    <div class="text-5xl mb-4">⚡</div>
+                    <h3 class="text-2xl font-bold text-[#1D1616] mb-3">Instant Payments</h3>
+                    <p class="text-lg text-[#8E1616]">Get paid immediately upon approval, no waiting periods</p>
+                </div>
+                <div class="bg-white rounded-3xl p-8 border-2 border-[#D84040] shadow-elevated card-hover">
+                    <div class="text-5xl mb-4">🌍</div>
+                    <h3 class="text-2xl font-bold text-[#1D1616] mb-3">Global Access</h3>
+                    <p class="text-lg text-[#8E1616]">No bank accounts required, works with MetaMask worldwide</p>
+                </div>
+            </div>
+        </div>
+        <div class="slide-number">2 / 9</div>
+    </div>
+
+    <!-- Slide 3: Flow -->
+    <div class="slide" id="slide-3">
+        <div class="slide-content">
+            <h2 class="text-6xl font-display font-bold slide-title mb-12 text-center">Workflow</h2>
+            <div class="space-y-6">
+                <div class="flex items-center gap-6 bg-white rounded-3xl p-6 border-2 border-[#1D1616] card-hover">
+                    <div class="w-16 h-16 rounded-2xl bg-[#D84040] text-white flex items-center justify-center text-2xl font-bold">1</div>
+                    <div class="flex-1">
+                        <h3 class="text-2xl font-bold text-[#1D1616] mb-2">Client Posts Job</h3>
+                        <p class="text-lg text-[#8E1616]">Create job listing with budget and requirements</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-6 bg-white rounded-3xl p-6 border-2 border-[#1D1616] card-hover">
+                    <div class="w-16 h-16 rounded-2xl bg-[#D84040] text-white flex items-center justify-center text-2xl font-bold">2</div>
+                    <div class="flex-1">
+                        <h3 class="text-2xl font-bold text-[#1D1616] mb-2">Funds Locked in Escrow</h3>
+                        <p class="text-lg text-[#8E1616]">Payment held securely in smart contract</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-6 bg-white rounded-3xl p-6 border-2 border-[#1D1616] card-hover">
+                    <div class="w-16 h-16 rounded-2xl bg-[#D84040] text-white flex items-center justify-center text-2xl font-bold">3</div>
+                    <div class="flex-1">
+                        <h3 class="text-2xl font-bold text-[#1D1616] mb-2">Freelancer Submits Proposal</h3>
+                        <p class="text-lg text-[#8E1616]">Apply with timeline and portfolio</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-6 bg-white rounded-3xl p-6 border-2 border-[#D84040] card-hover">
+                    <div class="w-16 h-16 rounded-2xl bg-[#D84040] text-white flex items-center justify-center text-2xl font-bold">4</div>
+                    <div class="flex-1">
+                        <h3 class="text-2xl font-bold text-[#1D1616] mb-2">Work Approved → Auto Payment</h3>
+                        <p class="text-lg text-[#8E1616]">Smart contract automatically releases funds</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="slide-number">3 / 9</div>
+    </div>
+
+    <!-- Slide 4: IDEA -->
+    <div class="slide" id="slide-4">
+        <div class="slide-content">
+            <h2 class="text-6xl font-display font-bold slide-title mb-12 text-center">The IDEA</h2>
+            <div class="space-y-6">
+                <div class="bg-white rounded-3xl p-8 border-2 border-[#D84040] shadow-elevated card-hover">
+                    <h3 class="text-3xl font-bold text-[#1D1616] mb-4">Problem Statement</h3>
+                    <p class="text-xl text-[#8E1616] mb-4">Traditional freelance platforms charge 15-20% fees, have payment delays, and require bank accounts, limiting global access.</p>
+                    <ul class="text-lg text-[#8E1616] space-y-2">
+                        <li>• High platform fees (20% vs our 2%)</li>
+                        <li>• 14+ day payment holds</li>
+                        <li>• Geographic barriers and banking restrictions</li>
+                        <li>• Trust issues between clients and freelancers</li>
+                    </ul>
+                </div>
+                <div class="bg-white rounded-3xl p-8 border-2 border-[#1D1616] shadow-elevated card-hover">
+                    <h3 class="text-3xl font-bold text-[#1D1616] mb-4">Our Solution</h3>
+                    <p class="text-xl text-[#8E1616] mb-4">Blockchain-powered escrow platform that eliminates intermediaries through smart contracts.</p>
+                    <ul class="text-lg text-[#8E1616] space-y-2">
+                        <li>• Smart contract escrow for secure fund holding</li>
+                        <li>• 90% reduction in platform fees</li>
+                        <li>• Instant payments upon approval</li>
+                        <li>• Global access via MetaMask wallet</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="slide-number">4 / 9</div>
+    </div>
+
+    <!-- Slide 5: Objective -->
+    <div class="slide" id="slide-5">
+        <div class="slide-content">
+            <h2 class="text-6xl font-display font-bold slide-title mb-12 text-center">Objectives</h2>
+            <div class="grid grid-cols-2 gap-8">
+                <div class="bg-white rounded-3xl p-8 border-2 border-[#1D1616] shadow-elevated card-hover">
+                    <div class="text-5xl mb-4">🎯</div>
+                    <h3 class="text-2xl font-bold text-[#1D1616] mb-3">Primary Goal</h3>
+                    <p class="text-lg text-[#8E1616]">Create a decentralized freelance marketplace that reduces fees by 90% and enables instant, global payments</p>
+                </div>
+                <div class="bg-white rounded-3xl p-8 border-2 border-[#1D1616] shadow-elevated card-hover">
+                    <div class="text-5xl mb-4">🔐</div>
+                    <h3 class="text-2xl font-bold text-[#1D1616] mb-3">Trust & Security</h3>
+                    <p class="text-lg text-[#8E1616]">Implement smart contract escrow to eliminate trust issues and ensure secure transactions</p>
+                </div>
+                <div class="bg-white rounded-3xl p-8 border-2 border-[#1D1616] shadow-elevated card-hover">
+                    <div class="text-5xl mb-4">🌐</div>
+                    <h3 class="text-2xl font-bold text-[#1D1616] mb-3">Global Access</h3>
+                    <p class="text-lg text-[#8E1616]">Remove geographic barriers by enabling cryptocurrency payments via MetaMask</p>
+                </div>
+                <div class="bg-white rounded-3xl p-8 border-2 border-[#D84040] shadow-elevated card-hover">
+                    <div class="text-5xl mb-4">⚡</div>
+                    <h3 class="text-2xl font-bold text-[#1D1616] mb-3">Efficiency</h3>
+                    <p class="text-lg text-[#8E1616]">Enable instant payments and automated workflows through blockchain technology</p>
+                </div>
+            </div>
+        </div>
+        <div class="slide-number">5 / 9</div>
+    </div>
+
+    <!-- Slide 6: Future Scope -->
+    <div class="slide" id="slide-6">
+        <div class="slide-content">
+            <h2 class="text-6xl font-display font-bold slide-title mb-12 text-center">Future Scope</h2>
+            <div class="space-y-6">
+                <div class="bg-white rounded-3xl p-8 border-2 border-[#1D1616] shadow-elevated card-hover">
+                    <h3 class="text-2xl font-bold text-[#1D1616] mb-4">Short-term (3-6 months)</h3>
+                    <ul class="text-lg text-[#8E1616] space-y-2">
+                        <li>• Deploy to Polygon mainnet</li>
+                        <li>• Implement IPFS for job details and deliverables</li>
+                        <li>• Add multi-currency support (USDC, DAI, MATIC)</li>
+                        <li>• Enhanced dispute resolution system</li>
+                    </ul>
+                </div>
+                <div class="bg-white rounded-3xl p-8 border-2 border-[#1D1616] shadow-elevated card-hover">
+                    <h3 class="text-2xl font-bold text-[#1D1616] mb-4">Long-term (6-12 months)</h3>
+                    <ul class="text-lg text-[#8E1616] space-y-2">
+                        <li>• Mobile app (iOS & Android)</li>
+                        <li>• Reputation system with on-chain credentials</li>
+                        <li>• Integration with other blockchains (Ethereum, BSC)</li>
+                        <li>• AI-powered job matching</li>
+                        <li>• Automated milestone payments</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="slide-number">6 / 9</div>
+    </div>
+
+    <!-- Slide 7: Future Model -->
+    <div class="slide" id="slide-7">
+        <div class="slide-content">
+            <h2 class="text-6xl font-display font-bold slide-title mb-12 text-center">Future Model</h2>
+            <div class="grid grid-cols-3 gap-6">
+                <div class="bg-white rounded-3xl p-8 border-2 border-[#1D1616] shadow-elevated card-hover text-center">
+                    <div class="text-5xl mb-4">📱</div>
+                    <h3 class="text-xl font-bold text-[#1D1616] mb-3">Mobile App</h3>
+                    <p class="text-base text-[#8E1616]">Native iOS and Android applications for on-the-go access</p>
+                </div>
+                <div class="bg-white rounded-3xl p-8 border-2 border-[#1D1616] shadow-elevated card-hover text-center">
+                    <div class="text-5xl mb-4">🤖</div>
+                    <h3 class="text-xl font-bold text-[#1D1616] mb-3">AI Matching</h3>
+                    <p class="text-base text-[#8E1616]">Intelligent job-freelancer matching using machine learning</p>
+                </div>
+                <div class="bg-white rounded-3xl p-8 border-2 border-[#1D1616] shadow-elevated card-hover text-center">
+                    <div class="text-5xl mb-4">⛓️</div>
+                    <h3 class="text-xl font-bold text-[#1D1616] mb-3">Multi-Chain</h3>
+                    <p class="text-base text-[#8E1616]">Support for Ethereum, BSC, and other EVM chains</p>
+                </div>
+                <div class="bg-white rounded-3xl p-8 border-2 border-[#1D1616] shadow-elevated card-hover text-center">
+                    <div class="text-5xl mb-4">🏆</div>
+                    <h3 class="text-xl font-bold text-[#1D1616] mb-3">Reputation</h3>
+                    <p class="text-base text-[#8E1616]">On-chain reputation system with verifiable credentials</p>
+                </div>
+                <div class="bg-white rounded-3xl p-8 border-2 border-[#1D1616] shadow-elevated card-hover text-center">
+                    <div class="text-5xl mb-4">💎</div>
+                    <h3 class="text-xl font-bold text-[#1D1616] mb-3">NFT Badges</h3>
+                    <p class="text-base text-[#8E1616]">Achievement badges and certifications as NFTs</p>
+                </div>
+                <div class="bg-white rounded-3xl p-8 border-2 border-[#D84040] shadow-elevated card-hover text-center">
+                    <div class="text-5xl mb-4">🌐</div>
+                    <h3 class="text-xl font-bold text-[#1D1616] mb-3">IPFS Storage</h3>
+                    <p class="text-base text-[#8E1616]">Decentralized storage for job details and deliverables</p>
+                </div>
+            </div>
+        </div>
+        <div class="slide-number">7 / 9</div>
+    </div>
+
+    <!-- Slide 8: Revenue Model -->
+    <div class="slide" id="slide-8">
+        <div class="slide-content">
+            <h2 class="text-6xl font-display font-bold slide-title mb-12 text-center">Revenue Model</h2>
+            <div class="grid grid-cols-2 gap-8">
+                <div class="bg-white rounded-3xl p-8 border-2 border-[#D84040] shadow-elevated card-hover">
+                    <h3 class="text-3xl font-bold text-[#1D1616] mb-4">Primary Revenue Stream</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <p class="text-2xl font-bold text-[#D84040] mb-2">2% Platform Fee</p>
+                            <p class="text-lg text-[#8E1616]">Charged on each successful transaction</p>
+                            <p class="text-base text-[#8E1616] opacity-80 mt-2">• 90% lower than traditional platforms</p>
+                            <p class="text-base text-[#8E1616] opacity-80">• Sustainable and competitive</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-3xl p-8 border-2 border-[#1D1616] shadow-elevated card-hover">
+                    <h3 class="text-3xl font-bold text-[#1D1616] mb-4">Future Revenue Streams</h3>
+                    <ul class="text-lg text-[#8E1616] space-y-3">
+                        <li>• <strong>Premium Memberships:</strong> Enhanced features for power users</li>
+                        <li>• <strong>Featured Listings:</strong> Boost job visibility</li>
+                        <li>• <strong>Enterprise Solutions:</strong> Custom contracts for large organizations</li>
+                        <li>• <strong>API Access:</strong> Developer integrations</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="mt-8 bg-[#EEEEEE] rounded-3xl p-6 border-2 border-[#1D1616]">
+                <p class="text-center text-xl text-[#1D1616]">
+                    <span class="font-bold text-[#D84040]">Projected Revenue:</span> With 1000 transactions/month at avg $1000 = $20,000/month platform fee
+                </p>
+            </div>
+        </div>
+        <div class="slide-number">8 / 9</div>
+    </div>
+
+    <!-- Slide 9: Generation (Next Generation / Conclusion) -->
+    <div class="slide" id="slide-9">
+        <div class="slide-content text-center">
+            <h2 class="text-6xl font-display font-bold slide-title mb-12">Next Generation Freelancing</h2>
+            <div class="space-y-8 mb-12">
+                <div class="bg-white rounded-3xl p-8 border-2 border-[#1D1616] shadow-elevated inline-block">
+                    <div class="text-5xl mb-4">🚀</div>
+                    <h3 class="text-3xl font-bold text-[#1D1616] mb-3">Live on Polygon Amoy Testnet</h3>
+                    <p class="text-xl text-[#8E1616]">Fully functional MVP ready for testing</p>
+                </div>
+            </div>
+            <div class="flex items-center justify-center gap-6 text-2xl text-[#1D1616] mb-12">
+                <div class="px-8 py-4 rounded-2xl bg-white border-2 border-[#1D1616] card-hover">
+                    <span class="font-bold text-[#D84040]">Smart Contracts</span> Deployed
+                </div>
+                <div class="px-8 py-4 rounded-2xl bg-white border-2 border-[#1D1616] card-hover">
+                    <span class="font-bold text-[#D84040]">Full Stack</span> Complete
+                </div>
+                <div class="px-8 py-4 rounded-2xl bg-white border-2 border-[#D84040] card-hover">
+                    <span class="font-bold text-[#D84040]">Ready</span> for Demo
+                </div>
+            </div>
+            <div class="text-4xl font-bold text-[#1D1616]">
+                Thank You! 🙏
+            </div>
+        </div>
+        <div class="slide-number">9 / 9</div>
+    </div>
+
+    <!-- Navigation Dots -->
+    <div class="nav-dots">
+        <div class="nav-dot active" onclick="goToSlide(1)"></div>
+        <div class="nav-dot" onclick="goToSlide(2)"></div>
+        <div class="nav-dot" onclick="goToSlide(3)"></div>
+        <div class="nav-dot" onclick="goToSlide(4)"></div>
+        <div class="nav-dot" onclick="goToSlide(5)"></div>
+        <div class="nav-dot" onclick="goToSlide(6)"></div>
+        <div class="nav-dot" onclick="goToSlide(7)"></div>
+        <div class="nav-dot" onclick="goToSlide(8)"></div>
+        <div class="nav-dot" onclick="goToSlide(9)"></div>
+    </div>
+
+    <script>
+        let currentSlide = 1;
+        const totalSlides = 9;
+
+        function showSlide(n) {
+            const slides = document.querySelectorAll('.slide');
+            const dots = document.querySelectorAll('.nav-dot');
+            
+            if (n > totalSlides) currentSlide = 1;
+            if (n < 1) currentSlide = totalSlides;
+            
+            slides.forEach(slide => slide.classList.remove('active'));
+            dots.forEach(dot => dot.classList.remove('active'));
+            
+            slides[currentSlide - 1].classList.add('active');
+            dots[currentSlide - 1].classList.add('active');
+        }
+
+        function goToSlide(n) {
+            currentSlide = n;
+            showSlide(currentSlide);
+        }
+
+        function nextSlide() {
+            currentSlide++;
+            showSlide(currentSlide);
+        }
+
+        function prevSlide() {
+            currentSlide--;
+            showSlide(currentSlide);
+        }
+
+        // Update progress bar
+        function updateProgress() {
+            const progress = (currentSlide / totalSlides) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        // Fullscreen functionality
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.log('Error attempting to enable fullscreen:', err);
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        // Listen for fullscreen changes
+        document.addEventListener('fullscreenchange', () => {
+            const btn = document.querySelector('.fullscreen-btn svg');
+            if (document.fullscreenElement) {
+                btn.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>';
+            } else {
+                btn.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path>';
+            }
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+                e.preventDefault();
+                nextSlide();
+            }
+            if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                e.preventDefault();
+                prevSlide();
+            }
+            if (e.key === 'f' || e.key === 'F') {
+                toggleFullscreen();
+            }
+            if (e.key === 'Escape' && document.fullscreenElement) {
+                document.exitFullscreen();
+            }
+        });
+
+        // Update showSlide to include progress
+        const originalShowSlide = showSlide;
+        showSlide = function(n) {
+            originalShowSlide(n);
+            updateProgress();
+        };
+
+        // Initialize
+        showSlide(1);
+        updateProgress();
+    </script>
+</body>
+</html>

@@ -3,7 +3,7 @@ Pydantic models for request/response
 """
 
 from pydantic import BaseModel, Field, ConfigDict
-from typing import Optional, List
+from typing import Optional, List, Union
 from datetime import datetime
 from enum import Enum
 
@@ -32,7 +32,7 @@ class UserCreate(BaseModel):
     wallet_address: str
     username: str
     email: Optional[str] = None
-    role: UserRole = UserRole.BOTH
+    role: Union[UserRole, str] = UserRole.BOTH  # Accept both enum and string
 
 class UserProfile(BaseModel):
     wallet_address: str
@@ -59,6 +59,17 @@ class JobCreate(BaseModel):
     budget: float
     deadline: datetime
     ipfs_hash: Optional[str] = None
+    tags: List[str] = []  # New tags field
+    escrow_address: Optional[str] = None  # Optional escrow address
+    allow_escrow_revert: bool = False  # Allow escrow to revert if no work done
+
+class JobCreateBlockchain(BaseModel):
+    """Request model for creating job on blockchain"""
+    title: str
+    ipfs_hash: str
+    deadline: int  # Unix timestamp
+    amount_eth: float
+    signed_transaction: Optional[str] = None  # If provided, use this instead of building new
 
 class JobUpdate(BaseModel):
     title: Optional[str] = None
@@ -76,12 +87,17 @@ class JobResponse(BaseModel):
     description: str
     category: str
     skills_required: List[str]
+    tags: List[str] = []  # New tags field
     budget: float
     deadline: datetime
     status: JobStatus
     ipfs_hash: Optional[str] = None
     blockchain_job_id: Optional[int] = None
     deliverable_url: Optional[str] = None
+    client_confirmed_completion: bool = False
+    freelancer_confirmed_completion: bool = False
+    escrow_address: Optional[str] = None
+    allow_escrow_revert: bool = False
     created_at: datetime
     updated_at: datetime
     proposal_count: int = 0
@@ -135,3 +151,41 @@ class TransactionResponse(BaseModel):
     status: str
     block_number: Optional[int] = None
     timestamp: Optional[datetime] = None
+
+class BlockchainActionRequest(BaseModel):
+    """Request model for blockchain actions"""
+    signed_transaction: Optional[str] = None
+    from_address: str
+    private_key: Optional[str] = None  # Only for backend operations, should be in secure storage
+
+class BlockchainJobResponse(BaseModel):
+    """Response model for blockchain job data"""
+    id: int
+    client: str
+    freelancer: Optional[str]
+    amount: float
+    deadline: datetime
+    title: str
+    ipfs_hash: str
+    status: str
+    created_at: datetime
+    completed_at: Optional[datetime]
+    funds_released: bool
+
+# Notification Models
+class NotificationResponse(BaseModel):
+    id: str
+    user_address: str
+    type: str
+    title: str
+    message: str
+    related_job_id: Optional[str] = None
+    related_proposal_id: Optional[str] = None
+    is_read: bool
+    created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+class NotificationCountResponse(BaseModel):
+    unread_count: int
+    total_count: int

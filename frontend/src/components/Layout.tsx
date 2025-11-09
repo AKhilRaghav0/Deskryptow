@@ -1,12 +1,7 @@
-import { Link, useLocation } from 'react-router-dom'
-import { ReactNode } from 'react'
-import { 
-  HomeIcon, 
-  BriefcaseIcon, 
-  PlusCircleIcon, 
-  UserCircleIcon,
-  Squares2X2Icon 
-} from '@heroicons/react/24/outline'
+import { ReactNode, useState, useEffect } from 'react'
+import { useLocation } from 'react-router-dom'
+import FloatingDock from './FloatingDock'
+import GridBackground from './GridBackground'
 
 interface LayoutProps {
   children: ReactNode
@@ -14,95 +9,85 @@ interface LayoutProps {
 
 export default function Layout({ children }: LayoutProps) {
   const location = useLocation()
+  const isChatPage = location.pathname.startsWith('/chat')
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
-  const isActive = (path: string) => location.pathname === path
+  // Check if modal is open by observing body class
+  useEffect(() => {
+    const checkModal = () => {
+      setIsModalOpen(document.body.classList.contains('modal-open'))
+    }
 
-  const navItems = [
-    { path: '/', label: 'Home', icon: HomeIcon },
-    { path: '/jobs', label: 'Jobs', icon: BriefcaseIcon },
-    { path: '/post-job', label: 'Post Job', icon: PlusCircleIcon },
-    { path: '/dashboard', label: 'Dashboard', icon: Squares2X2Icon },
-  ]
+    // Initial check
+    checkModal()
+
+    // Watch for class changes
+    const observer = new MutationObserver(checkModal)
+    observer.observe(document.body, {
+      attributes: true,
+      attributeFilter: ['class'],
+    })
+
+    return () => observer.disconnect()
+  }, [])
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Navigation */}
-      <nav className="bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex">
-              <Link to="/" className="flex items-center">
-                <span className="text-2xl font-bold text-indigo-600">
-                  Deskryptow
-                </span>
-              </Link>
-              <div className="hidden sm:ml-8 sm:flex sm:space-x-8">
-                {navItems.map((item) => {
-                  const Icon = item.icon
-                  return (
-                    <Link
-                      key={item.path}
-                      to={item.path}
-                      className={`inline-flex items-center px-1 pt-1 text-sm font-medium border-b-2 ${
-                        isActive(item.path)
-                          ? 'border-indigo-500 text-gray-900'
-                          : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-                      }`}
-                    >
-                      <Icon className="h-5 w-5 mr-2" />
-                      {item.label}
-                    </Link>
-                  )
-                })}
-              </div>
-            </div>
-            <div className="flex items-center">
-              <button className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                <UserCircleIcon className="h-5 w-5 mr-2" />
-                Connect Wallet
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Mobile menu */}
-        <div className="sm:hidden">
-          <div className="pt-2 pb-3 space-y-1">
-            {navItems.map((item) => {
-              const Icon = item.icon
-              return (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  className={`flex items-center pl-3 pr-4 py-2 border-l-4 text-base font-medium ${
-                    isActive(item.path)
-                      ? 'bg-indigo-50 border-indigo-500 text-indigo-700'
-                      : 'border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800'
-                  }`}
-                >
-                  <Icon className="h-5 w-5 mr-3" />
-                  {item.label}
-                </Link>
-              )
-            })}
-          </div>
-        </div>
-      </nav>
-
+    <div className="min-h-screen bg-[#EEEEEE] relative">
+      <GridBackground />
+      <FloatingDock />
+      
       {/* Main content */}
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+      <main className="relative z-10 w-full pb-24 md:pb-0">
         {children}
       </main>
 
-      {/* Footer */}
-      <footer className="bg-white border-t border-gray-200 mt-auto">
-        <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
-          <p className="text-center text-sm text-gray-500">
-            © {new Date().getFullYear()} Deskryptow. Decentralized freelance escrow platform.
-          </p>
+      {/* Footer - Hidden on chat page and when modal is open */}
+      {!isChatPage && !isModalOpen && (
+        <footer className="relative z-10 mt-32 border-t-2 border-[#1D1616] bg-white/80 backdrop-blur-xl pb-24 md:pb-16">
+        <div className="w-full px-6 sm:px-8 lg:px-12 xl:px-16 py-16">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
+            <div>
+              <div className="flex items-center mb-6">
+                <div className="w-10 h-10 rounded-xl bg-[#1D1616] flex items-center justify-center mr-3 shadow-card">
+                  <span className="text-white font-bold">D</span>
+                </div>
+                <span className="text-xl font-display font-bold text-[#1D1616]">Deskryptow</span>
+              </div>
+              <p className="text-sm text-[#1D1616] leading-relaxed">Decentralized freelance escrow platform powered by blockchain technology.</p>
+            </div>
+            <div>
+              <h3 className="font-bold text-[#1D1616] mb-6 text-lg">Platform</h3>
+              <ul className="space-y-3 text-sm text-[#1D1616]">
+                <li><a href="/jobs" className="hover:text-[#D84040] transition-colors font-medium">Browse Jobs</a></li>
+                <li><a href="/post-job" className="hover:text-[#D84040] transition-colors font-medium">Post a Job</a></li>
+                <li><a href="/dashboard" className="hover:text-[#D84040] transition-colors font-medium">Dashboard</a></li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="font-bold text-[#1D1616] mb-6 text-lg">Resources</h3>
+              <ul className="space-y-3 text-sm text-[#1D1616]">
+                <li><a href="#" className="hover:text-[#D84040] transition-colors font-medium">Documentation</a></li>
+                <li><a href="#" className="hover:text-[#D84040] transition-colors font-medium">API</a></li>
+                <li><a href="#" className="hover:text-[#D84040] transition-colors font-medium">Support</a></li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="font-bold text-[#1D1616] mb-6 text-lg">Legal</h3>
+              <ul className="space-y-3 text-sm text-[#1D1616]">
+                <li><a href="#" className="hover:text-[#D84040] transition-colors font-medium">Privacy</a></li>
+                <li><a href="#" className="hover:text-[#D84040] transition-colors font-medium">Terms</a></li>
+                <li><a href="#" className="hover:text-[#D84040] transition-colors font-medium">Security</a></li>
+              </ul>
+            </div>
+          </div>
+          <div className="pt-8 border-t-2 border-[#1D1616] text-center">
+            <p className="text-sm text-[#1D1616] font-medium">
+              © {new Date().getFullYear()} Deskryptow. All rights reserved.
+            </p>
+          </div>
         </div>
       </footer>
+      )}
     </div>
   )
 }
-

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { 
   BellIcon, 
   CheckCircleIcon, 
@@ -69,7 +69,7 @@ interface NotificationWithJob extends Notification {
 }
 
 export default function Notifications() {
-  const navigate = useNavigate()
+  // const navigate = useNavigate() // Not used currently
   const { address, isConnected } = useWallet()
   const [notifications, setNotifications] = useState<NotificationWithJob[]>([])
   const [loading, setLoading] = useState(true)
@@ -116,40 +116,57 @@ export default function Notifications() {
         return
       }
       
-      // Fetch job and proposal details for each notification
-      const notificationsWithDetails = await Promise.all(
-        response.data.map(async (notification: Notification) => {
-          const result: NotificationWithJob = { ...notification }
-          
-          // Fetch job details if available
-          if (notification.related_job_id) {
+      // Fetch job and proposal details for each notification (optimized with batching)
+      // Collect unique IDs first
+      const jobIds = new Set<string>()
+      const proposalIds = new Set<string>()
+      
+      response.data.forEach((notification: Notification) => {
+        if (notification.related_job_id) jobIds.add(notification.related_job_id)
+        if (notification.related_proposal_id) proposalIds.add(notification.related_proposal_id)
+      })
+      
+      // Batch fetch jobs and proposals in parallel
+      const [jobData, proposalData] = await Promise.all([
+        Promise.all(
+          Array.from(jobIds).map(async (jobId) => {
             try {
-              const jobResponse = await axios.get(
-                `${config.apiUrl}/api/v1/jobs/${notification.related_job_id}`
-              )
-              result.job = jobResponse.data
+              const jobResponse = await axios.get(`${config.apiUrl}/api/v1/jobs/${jobId}`)
+              return { jobId, job: jobResponse.data }
             } catch (error) {
-              console.error(`Error fetching job ${notification.related_job_id}:`, error)
-              // Continue without job details
+              console.error(`Error fetching job ${jobId}:`, error)
+              return { jobId, job: null }
             }
-          }
-          
-          // Fetch proposal details if available
-          if (notification.related_proposal_id) {
+          })
+        ),
+        Promise.all(
+          Array.from(proposalIds).map(async (proposalId) => {
             try {
-              const proposalResponse = await axios.get(
-                `${config.apiUrl}/api/v1/proposals/${notification.related_proposal_id}`
-              )
-              result.proposal = proposalResponse.data
+              const proposalResponse = await axios.get(`${config.apiUrl}/api/v1/proposals/${proposalId}`)
+              return { proposalId, proposal: proposalResponse.data }
             } catch (error) {
-              console.error(`Error fetching proposal ${notification.related_proposal_id}:`, error)
-              // Continue without proposal details
+              console.error(`Error fetching proposal ${proposalId}:`, error)
+              return { proposalId, proposal: null }
             }
-          }
-          
-          return result
-        })
-      )
+          })
+        )
+      ])
+      
+      // Create lookup maps
+      const jobMap = new Map(jobData.map(({ jobId, job }) => [jobId, job]))
+      const proposalMap = new Map(proposalData.map(({ proposalId, proposal }) => [proposalId, proposal]))
+      
+      // Map notifications with details
+      const notificationsWithDetails = response.data.map((notification: Notification) => {
+        const result: NotificationWithJob = { ...notification }
+        if (notification.related_job_id) {
+          result.job = jobMap.get(notification.related_job_id) || undefined
+        }
+        if (notification.related_proposal_id) {
+          result.proposal = proposalMap.get(notification.related_proposal_id) || undefined
+        }
+        return result
+      })
       
       setNotifications(notificationsWithDetails)
     } catch (error: any) {
@@ -202,6 +219,9 @@ export default function Notifications() {
         prev.map(n => n.id === notificationId ? { ...n, is_read: true } : n)
       )
       setUnreadCount(prev => Math.max(0, prev - 1))
+      
+      // Trigger global event to update NotificationBell
+      window.dispatchEvent(new CustomEvent('notification-updated'))
     } catch (error) {
       console.error('Error marking notification as read:', error)
       toast.error('Failed to mark notification as read')
@@ -223,6 +243,10 @@ export default function Notifications() {
       // Update local state
       setNotifications(prev => prev.map(n => ({ ...n, is_read: true })))
       setUnreadCount(0)
+      
+      // Trigger global event to update NotificationBell
+      window.dispatchEvent(new CustomEvent('notification-updated'))
+      
       toast.success('All notifications marked as read')
     } catch (error) {
       console.error('Error marking all as read:', error)
@@ -231,21 +255,49 @@ export default function Notifications() {
   }
 
   const acceptProposal = async (proposalId: string, notificationId: string) => {
-    if (!isConnected || !address) return
+    if (!isConnected || !address) {
+      toast.error('Please connect your wallet')
+      return
+    }
     
     setProcessingActions(prev => new Set(prev).add(proposalId))
     
     try {
-      await axios.put(`${config.apiUrl}/api/v1/proposals/${proposalId}/accept`)
+      // Add client_address parameter that backend requires
+      await axios.put(
+        `${config.apiUrl}/api/v1/proposals/${proposalId}/accept`,
+        {},
+        {
+          params: { client_address: address },
+        }
+      )
+      
       toast.success('Proposal accepted!')
-      markAsRead(notificationId)
-      // Collapse the notification after accepting
-      setCollapsedNotifications(prev => new Set(prev).add(notificationId))
-      // Refresh notifications to get updated job status
-      fetchNotifications()
+      
+      // Mark as read immediately
+      await markAsRead(notificationId)
+      
+      // Remove notification from list immediately (it's no longer actionable)
+      setNotifications(prev => prev.filter(n => n.id !== notificationId))
+      
+      // Update unread count immediately
+      setUnreadCount(prev => Math.max(0, prev - 1))
+      
+      // Trigger global event to update NotificationBell
+      window.dispatchEvent(new CustomEvent('notification-updated'))
+      
+      // Trigger event to refresh job detail pages
+      window.dispatchEvent(new CustomEvent('proposal-accepted'))
+      
+      // Refresh notifications after a short delay to get updated status
+      setTimeout(() => {
+        fetchNotifications()
+        fetchNotificationCount()
+      }, 1000)
     } catch (error: any) {
       console.error('Error accepting proposal:', error)
-      toast.error(error.response?.data?.detail || 'Failed to accept proposal')
+      const errorMsg = error.response?.data?.detail || error.message || 'Failed to accept proposal'
+      toast.error(errorMsg)
     } finally {
       setProcessingActions(prev => {
         const newSet = new Set(prev)
@@ -263,9 +315,20 @@ export default function Notifications() {
     try {
       await axios.put(`${config.apiUrl}/api/v1/proposals/${proposalId}/reject`)
       toast.success('Proposal rejected')
-      markAsRead(notificationId)
-      // Remove notification from list since proposal is rejected
+      
+      // Mark as read immediately
+      await markAsRead(notificationId)
+      
+      // Remove notification from list immediately
       setNotifications(prev => prev.filter(n => n.id !== notificationId))
+      
+      // Update unread count immediately
+      setUnreadCount(prev => Math.max(0, prev - 1))
+      
+      // Trigger global event to update NotificationBell
+      window.dispatchEvent(new CustomEvent('notification-updated'))
+      
+      // Refresh count from backend
       fetchNotificationCount()
     } catch (error: any) {
       console.error('Error rejecting proposal:', error)
@@ -297,9 +360,20 @@ export default function Notifications() {
         }
       )
       toast.success('Proposal withdrawn successfully')
-      markAsRead(notificationId)
-      // Remove notification from list since proposal is deleted
+      
+      // Mark as read immediately
+      await markAsRead(notificationId)
+      
+      // Remove notification from list immediately
       setNotifications(prev => prev.filter(n => n.id !== notificationId))
+      
+      // Update unread count immediately
+      setUnreadCount(prev => Math.max(0, prev - 1))
+      
+      // Trigger global event to update NotificationBell
+      window.dispatchEvent(new CustomEvent('notification-updated'))
+      
+      // Refresh count from backend
       fetchNotificationCount()
     } catch (error: any) {
       console.error('Error withdrawing proposal:', error)
@@ -327,21 +401,33 @@ export default function Notifications() {
 
   // Separate notifications into action required and completed
   const hasAction = (notification: NotificationWithJob): boolean => {
-    // Job owners can accept/reject proposals
-    if (notification.type === 'proposal_received' && notification.related_proposal_id) {
-      return true
+    if (!address) return false
+    
+    try {
+      // Job owners can accept/reject proposals
+      if (notification.type === 'proposal_received' && notification.related_proposal_id) {
+        // Check if this notification is for the current user (job owner)
+        if (notification.job?.client_address?.toLowerCase() === address.toLowerCase()) {
+          return true
+        }
+      }
+      // Freelancers can withdraw pending proposals
+      if (notification.proposal && 
+          notification.proposal.freelancer_address?.toLowerCase() === address.toLowerCase() &&
+          notification.proposal.status === 'pending') {
+        return true
+      }
+    } catch (error) {
+      console.error('Error checking hasAction:', error)
+      return false
     }
-    // Freelancers can withdraw pending proposals
-    if (notification.proposal && 
-        notification.proposal.freelancer_address.toLowerCase() === address?.toLowerCase() &&
-        notification.proposal.status === 'pending') {
-      return true
-    }
+    
     return false
   }
 
-  const actionRequiredNotifications = notifications.filter(n => hasAction(n))
-  const completedNotifications = notifications.filter(n => !hasAction(n))
+  // Calculate action required count based on actual unread notifications that need action
+  const actionRequiredNotifications = notifications.filter(n => hasAction(n) && !n.is_read)
+  const completedNotifications = notifications.filter(n => !hasAction(n) || n.is_read)
 
   // Set default tab based on which has notifications
   useEffect(() => {
@@ -451,7 +537,7 @@ export default function Notifications() {
                 <div className="space-y-3">
                   <div>
                     <p className="text-sm font-semibold text-[#8E1616] mb-1">Job Title</p>
-                    <p className="text-base font-bold text-[#1D1616]">{notification.job.title}</p>
+                    <p className="text-base font-bold text-[#1D1616]">{notification.job?.title || 'Job'}</p>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
@@ -459,20 +545,24 @@ export default function Notifications() {
                         <CurrencyDollarIcon className="h-4 w-4 mr-1" />
                         Budget
                       </p>
-                      <p className="text-base font-bold text-[#D84040]">{notification.job.budget} ETH</p>
+                      {notification.job?.budget && (
+                        <p className="text-base font-bold text-[#D84040]">{notification.job.budget} MATIC</p>
+                      )}
                     </div>
                     <div>
                       <p className="text-sm font-semibold text-[#8E1616] mb-1 flex items-center">
                         <ClockIcon className="h-4 w-4 mr-1" />
                         Deadline
                       </p>
-                      <p className="text-base font-bold text-[#1D1616]">
-                        {new Date(notification.job.deadline).toLocaleDateString('en-US', {
-                          month: 'short',
-                          day: 'numeric',
-                          year: 'numeric',
-                        })}
-                      </p>
+                      {notification.job?.deadline && (
+                        <p className="text-base font-bold text-[#1D1616]">
+                          {new Date(notification.job.deadline).toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric',
+                          })}
+                        </p>
+                      )}
                     </div>
                   </div>
                   {notification.job.description && (
@@ -551,7 +641,9 @@ export default function Notifications() {
 
             {/* Action Buttons */}
             <div className="flex flex-wrap gap-3">
-              {notification.type === 'proposal_received' && notification.related_proposal_id && (
+              {notification.type === 'proposal_received' && 
+               notification.related_proposal_id && 
+               notification.job?.client_address?.toLowerCase() === address?.toLowerCase() && (
                 <>
                   <button
                     onClick={() => onAcceptProposal(notification.related_proposal_id!, notification.id)}
@@ -593,10 +685,10 @@ export default function Notifications() {
               )}
               {/* Withdraw button for freelancers who submitted proposals */}
               {notification.proposal && 
-               notification.proposal.freelancer_address.toLowerCase() === address?.toLowerCase() &&
+               notification.proposal.freelancer_address?.toLowerCase() === address?.toLowerCase() &&
                notification.proposal.status === 'pending' && (
                 <button
-                  onClick={() => onWithdrawProposal(notification.proposal!.id, notification.id)}
+                  onClick={() => onWithdrawProposal(notification.proposal?.id || '', notification.id)}
                   disabled={processingActions.has(notification.proposal!.id)}
                   className="px-6 py-3 rounded-2xl text-sm font-bold text-[#1D1616] bg-[#EEEEEE] hover:bg-[#E5E5E5] transition-all border-2 border-[#1D1616] disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
                 >

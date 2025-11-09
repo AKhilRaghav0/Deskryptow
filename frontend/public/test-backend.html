@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Backend Connection Test</title>
+    <style>
+        body { font-family: monospace; padding: 20px; background: #1D1616; color: #EEEEEE; }
+        .test { margin: 20px 0; padding: 15px; background: #2A1F1F; border-radius: 8px; }
+        .success { border-left: 4px solid #D84040; }
+        .error { border-left: 4px solid #8E1616; }
+        button { padding: 10px 20px; background: #D84040; color: white; border: none; border-radius: 5px; cursor: pointer; margin: 5px; }
+        button:hover { background: #8E1616; }
+        pre { background: #1D1616; padding: 10px; border-radius: 5px; overflow-x: auto; }
+        code { color: #D84040; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Backend Connection Test</h1>
+    <p>Current hostname: <strong id="hostname"></strong></p>
+    <p>Detected backend URL: <strong id="backend-url"></strong></p>
+    
+    <div class="test">
+        <h2>Test 1: Backend Health Check</h2>
+        <button onclick="testHealth()">Test /health</button>
+        <div id="health-result"></div>
+    </div>
+    
+    <div class="test">
+        <h2>Test 2: Backend Root</h2>
+        <button onclick="testRoot()">Test /</button>
+        <div id="root-result"></div>
+    </div>
+    
+    <div class="test">
+        <h2>Test 3: CORS Test</h2>
+        <button onclick="testCORS()">Test CORS with API Call</button>
+        <div id="cors-result"></div>
+    </div>
+
+    <script>
+        const hostname = window.location.hostname;
+        const backendUrl = hostname === 'localhost' || hostname === '127.0.0.1' 
+            ? 'http://localhost:8000' 
+            : `http://${hostname}:8000`;
+        
+        document.getElementById('hostname').textContent = hostname;
+        document.getElementById('backend-url').textContent = backendUrl;
+        
+        async function testHealth() {
+            const result = document.getElementById('health-result');
+            result.innerHTML = '<p>⏳ Testing...</p>';
+            try {
+                const response = await fetch(`${backendUrl}/health`);
+                const data = await response.json();
+                result.innerHTML = `<div class="success"><p>✅ Success! Status: ${response.status}</p><pre>${JSON.stringify(data, null, 2)}</pre></div>`;
+            } catch (error) {
+                result.innerHTML = `<div class="error"><p>❌ Error: ${error.message}</p><p>Backend URL tried: <code>${backendUrl}/health</code></p><p>Make sure backend is running and accessible.</p></div>`;
+            }
+        }
+        
+        async function testRoot() {
+            const result = document.getElementById('root-result');
+            result.innerHTML = '<p>⏳ Testing...</p>';
+            try {
+                const response = await fetch(`${backendUrl}/`);
+                const data = await response.json();
+                result.innerHTML = `<div class="success"><p>✅ Success! Status: ${response.status}</p><pre>${JSON.stringify(data, null, 2)}</pre></div>`;
+            } catch (error) {
+                result.innerHTML = `<div class="error"><p>❌ Error: ${error.message}</p></div>`;
+            }
+        }
+        
+        async function testCORS() {
+            const result = document.getElementById('cors-result');
+            result.innerHTML = '<p>⏳ Testing...</p>';
+            try {
+                const response = await fetch(`${backendUrl}/api/v1/jobs/`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    result.innerHTML = `<div class="success"><p>✅ CORS working! Status: ${response.status}</p><p>Received ${data.length || 0} jobs</p></div>`;
+                } else {
+                    result.innerHTML = `<div class="error"><p>⚠️ Status: ${response.status} - ${response.statusText}</p></div>`;
+                }
+            } catch (error) {
+                result.innerHTML = `<div class="error"><p>❌ CORS/Network Error: ${error.message}</p><p>This indicates a CORS or network connectivity issue.</p></div>`;
+            }
+        }
+    </script>
+</body>
+</html>
+

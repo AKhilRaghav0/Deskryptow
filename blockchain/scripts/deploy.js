@@ -42,9 +42,16 @@ async function main() {
   console.log("1. Update .env file with contract address:");
   console.log(`   ESCROW_CONTRACT_ADDRESS=${escrowAddress}`);
   console.log("\n2. Verify contract on PolygonScan:");
-  console.log(`   npx hardhat verify --network mumbai ${escrowAddress} ${platformWallet}`);
-  console.log("\n3. View on Mumbai PolygonScan:");
-  console.log(`   https://mumbai.polygonscan.com/address/${escrowAddress}`);
+  const network = hre.network.name;
+  if (network === 'amoy') {
+    console.log(`   npx hardhat verify --network amoy ${escrowAddress} ${platformWallet}`);
+    console.log("\n3. View on Amoy PolygonScan:");
+    console.log(`   https://amoy.polygonscan.com/address/${escrowAddress}`);
+  } else if (network === 'mumbai') {
+    console.log(`   npx hardhat verify --network mumbai ${escrowAddress} ${platformWallet}`);
+    console.log("\n3. View on Mumbai PolygonScan:");
+    console.log(`   https://mumbai.polygonscan.com/address/${escrowAddress}`);
+  }
 }
 
 main()

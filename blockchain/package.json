@@ -7,6 +7,8 @@
     "compile": "hardhat compile",
     "test": "hardhat test",
     "test:coverage": "hardhat coverage",
+    "deploy:amoy": "hardhat run scripts/deploy.js --network amoy",
+    "verify:amoy": "hardhat run scripts/verify.js --network amoy",
     "deploy:mumbai": "hardhat run scripts/deploy.js --network mumbai",
     "verify:mumbai": "hardhat run scripts/verify.js --network mumbai",
     "node": "hardhat node",
@@ -29,7 +31,7 @@
     "hardhat-gas-reporter": "^1.0.9"
   },
   "dependencies": {
-    "@openzeppelin/contracts": "^5.0.0",
+    "@openzeppelin/contracts": "^5.4.0",
     "dotenv": "^16.3.1"
   }
 }

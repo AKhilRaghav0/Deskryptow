@@ -1,13 +1,14 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap');
 
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'Fira Code', 'JetBrains Mono', monospace;
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  color-scheme: light;
+  color: #1D1616;
+  background-color: #EEEEEE;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -19,8 +20,142 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  background-color: #EEEEEE;
+  overflow-x: hidden;
 }
 
 #root {
   min-height: 100vh;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Global placeholder styling - minor grey */
+::placeholder {
+  color: #999999 !important;
+  opacity: 1;
+}
+
+::-webkit-input-placeholder {
+  color: #999999 !important;
+  opacity: 1;
+}
+
+::-moz-placeholder {
+  color: #999999 !important;
+  opacity: 1;
+}
+
+:-ms-input-placeholder {
+  color: #999999 !important;
+  opacity: 1;
+}
+
+:-moz-placeholder {
+  color: #999999 !important;
+  opacity: 1;
+}
+
+html.lenis {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+    .lenis.lenis-scrolling iframe {
+      pointer-events: none;
+    }
+
+    /* Hide scrollbar but keep functionality */
+    .scrollbar-hide {
+      -ms-overflow-style: none;  /* IE and Edge */
+      scrollbar-width: none;  /* Firefox */
+    }
+
+    .scrollbar-hide::-webkit-scrollbar {
+      display: none;  /* Chrome, Safari and Opera */
+    }
+
+    /* Custom scrollbar for modals */
+    .modal-scrollbar {
+      scrollbar-width: thin;
+      scrollbar-color: #1D1616 #EEEEEE;
+      /* Enable smooth scrolling */
+      -webkit-overflow-scrolling: touch;
+      /* Ensure scroll works */
+      overscroll-behavior: contain;
+    }
+
+    .modal-scrollbar::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .modal-scrollbar::-webkit-scrollbar-track {
+      background: #EEEEEE;
+      border-radius: 4px;
+    }
+
+    .modal-scrollbar::-webkit-scrollbar-thumb {
+      background: #1D1616;
+      border-radius: 4px;
+      border: 1px solid #EEEEEE;
+    }
+
+    .modal-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #D84040;
+    }
+
+/* Breathing Animation */
+@keyframes breathing {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.animate-breathing {
+  animation: breathing 3s ease-in-out infinite;
+}
+
+/* Fade In Animations */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 1s ease-out;
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 1s ease-out;
 }

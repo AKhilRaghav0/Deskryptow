@@ -256,7 +256,7 @@ export default function Dashboard() {
                                 </div>
                               </div>
                               <div className="text-right ml-8">
-                                <p className="text-3xl font-display font-bold text-[#D84040]">{job.budget} ETH</p>
+                                <p className="text-3xl font-display font-bold text-[#D84040]">{job.budget} MATIC</p>
                               </div>
                             </div>
                           </Link>
@@ -293,7 +293,7 @@ export default function Dashboard() {
                                 </p>
                               </div>
                               <div className="text-right ml-8">
-                                <p className="text-3xl font-display font-bold text-[#D84040]">{job.budget} ETH</p>
+                                <p className="text-3xl font-display font-bold text-[#D84040]">{job.budget} MATIC</p>
                                 <CheckCircleIcon className="h-6 w-6 text-green-600 mt-2 mx-auto" />
                               </div>
                             </div>
@@ -344,7 +344,7 @@ export default function Dashboard() {
                               </div>
                               {proposal.job && (
                                 <div className="text-right ml-8">
-                                  <p className="text-3xl font-display font-bold text-[#D84040]">{proposal.job.budget} ETH</p>
+                                  <p className="text-3xl font-display font-bold text-[#D84040]">{proposal.job.budget} MATIC</p>
                                 </div>
                               )}
                             </div>
