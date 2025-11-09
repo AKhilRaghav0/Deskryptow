@@ -11,6 +11,12 @@
 
 **Built for hackCBS 8.0 Hackathon** 🏆
 
+### 📊 Presentation & Documentation
+
+- **[Project Presentation (HTML)](presentation.html)** - Interactive presentation showcasing Deskryptow
+- **[Workflow Guide](WORKFLOW_GUIDE.md)** - Complete workflow documentation
+- **[Project Status](PROJECT_STATUS.md)** - Detailed project status and features
+
 ---
 
 ## 📸 Project Screenshots
