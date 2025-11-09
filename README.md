@@ -13,7 +13,7 @@
 
 ### 📊 Presentation & Documentation
 
-- **[Project Presentation (Live)](https://akhilraghav0.github.io/Deskryptow/)** 🚀 - Interactive presentation deployed via GitHub Pages (auto-deploys on push)
+- **[Project Presentation (Live)](https://akhilraghav0.github.io/Deskryptow/)** 🚀 - Interactive presentation deployed via GitHub Pages (available at root URL)
 - **[Project Presentation (PowerPoint)](extras/projectppt.pptx)** - Complete project presentation deck
 - **[Project Presentation (HTML Source)](presentation.html)** - Source HTML file
 - **[Workflow Guide](WORKFLOW_GUIDE.md)** - Complete multi-device workflow documentation

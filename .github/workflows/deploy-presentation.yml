@@ -35,6 +35,8 @@ jobs:
         run: |
           mkdir -p docs
           cp presentation.html docs/index.html
+          # Also keep original for direct access
+          cp presentation.html docs/presentation.html
       
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
