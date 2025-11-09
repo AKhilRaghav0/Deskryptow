@@ -17,10 +17,10 @@
 
 | | | |
 |:---:|:---:|:---:|
-| ![Screenshot 1](projectphotos/screenshot-1.png) | ![Screenshot 2](projectphotos/screenshot-2.png) | ![Screenshot 3](projectphotos/screenshot-3.png) |
-| Feature 1 | Feature 2 | Feature 3 |
-| ![Screenshot 4](projectphotos/screenshot-4.png) | ![Screenshot 5](projectphotos/screenshot-5.png) | ![Screenshot 6](projectphotos/screenshot-6.png) |
-| Feature 4 | Feature 5 | Feature 6 |
+| ![Screenshot 1](projectphotos/screenshot-1.png) | ![Screenshot 10](projectphotos/screenshot-10.png) | ![Screenshot 11](projectphotos/screenshot-11.png) |
+| Feature 1 | Feature 10 | Feature 11 |
+| ![Screenshot 12](projectphotos/screenshot-12.png) | ![Screenshot 13](projectphotos/screenshot-13.png) | ![Screenshot 14](projectphotos/screenshot-14.png) |
+| Feature 12 | Feature 13 | Feature 14 |
 
 ---
 
@@ -88,15 +88,15 @@ Traditional freelance platforms like Upwork and Fiverr face several critical iss
 - Delayed access to earned money
 
 ### Geographic Barriers
-- Requires bank accounts and traditional payment methods
-- Payment processing unavailable or unreliable in many countries
-- High transaction fees for international transfers
+  - Requires bank accounts and traditional payment methods
+  - Payment processing unavailable or unreliable in many countries
+  - High transaction fees for international transfers
 - Currency conversion issues
 
 ### Biased Dispute Resolution
-- Disputes are often resolved in favor of the platform
-- Lack of transparency in the resolution process
-- Limited recourse for users
+  - Disputes are often resolved in favor of the platform
+  - Lack of transparency in the resolution process
+  - Limited recourse for users
 
 These issues create barriers for both clients and freelancers, limiting the growth of the global freelance economy.
 
