@@ -13,9 +13,10 @@
 
 ### 📊 Presentation & Documentation
 
-- **[Project Presentation (HTML)](presentation.html)** - Interactive presentation showcasing Deskryptow
-- **[Workflow Guide](WORKFLOW_GUIDE.md)** - Complete workflow documentation
-- **[Project Status](PROJECT_STATUS.md)** - Detailed project status and features
+- **[Project Presentation (PowerPoint)](extras/projectppt.pptx)** - Complete project presentation deck
+- **[Project Presentation (HTML)](presentation.html)** - Interactive presentation showcasing Deskryptow features and architecture
+- **[Workflow Guide](WORKFLOW_GUIDE.md)** - Complete multi-device workflow documentation
+- **[Project Status](PROJECT_STATUS.md)** - Detailed project status and completed features
 
 ---
 
