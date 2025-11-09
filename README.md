@@ -17,16 +17,10 @@
 
 | | | |
 |:---:|:---:|:---:|
-| ![Home Page](projectphotos/screenshot-1.png) | ![Job Listing](projectphotos/screenshot-2.png) | ![Job Details](projectphotos/screenshot-3.png) |
-| Home Page | Job Listing | Job Details |
-| ![Post Job](projectphotos/screenshot-4.png) | ![Proposals](projectphotos/screenshot-5.png) | ![Dashboard](projectphotos/screenshot-6.png) |
-| Post Job | Proposals | Dashboard |
-| ![Chat System](projectphotos/screenshot-7.png) | ![Notifications](projectphotos/screenshot-8.png) | ![Escrow Dashboard](projectphotos/screenshot-9.png) |
-| Chat System | Notifications | Escrow Dashboard |
-| ![Submit Work](projectphotos/screenshot-10.png) | ![Payment Release](projectphotos/screenshot-11.png) | ![Job Management](projectphotos/screenshot-12.png) |
-| Submit Work | Payment Release | Job Management |
-| ![Profile Settings](projectphotos/screenshot-13.png) | ![Search & Filters](projectphotos/screenshot-14.png) | |
-| Profile Settings | Search & Filters | |
+| ![Screenshot 1](projectphotos/screenshot-1.png) | ![Screenshot 10](projectphotos/screenshot-10.png) | ![Screenshot 11](projectphotos/screenshot-11.png) |
+| Feature 1 | Feature 10 | Feature 11 |
+| ![Screenshot 12](projectphotos/screenshot-12.png) | ![Screenshot 13](projectphotos/screenshot-13.png) | ![Screenshot 14](projectphotos/screenshot-14.png) |
+| Feature 12 | Feature 13 | Feature 14 |
 
 ---
 
